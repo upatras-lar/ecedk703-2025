@@ -1,0 +1,5 @@
+# This service asks Jerry to tell us how far away 
+# he is from a certain point/obstacle. The request is
+# in the form of x and y coordinates for thge obstacle
+# and the response is the Euclidean distance between Jerry
+# and the obstacle
