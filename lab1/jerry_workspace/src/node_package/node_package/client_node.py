@@ -52,16 +52,16 @@ class ClientNode(Node):
     def process_response(self, future: Future):
         # Callback for the future, that will be called when it is done
         response = future.result()
-        if response is not None:
-            #### ENTER CODE HERE ###########
-            # Print the servers response
-    
-            ################################
-        else:
-            #### ENTER CODE HERE ###########
-            # Print the servers response
-    
-            ################################
+        #### ENTER CODE HERE ###########
+        # Print the servers response
+        # if response is not None:
+        #     ###################
+
+        #     ###################
+        # else:
+        #     ###################
+
+        #     ###################
 
 def main(args=None):
 
