@@ -400,7 +400,7 @@ Build & source, then launch:
 cd luna_workspace
 colcon build
 source install/setup.bash
-ros2 launch luna_package luna_package.launch.py linear_speed:=0.35 period:=0.25
+ros2 launch luna_package luna_package_launch.py linear_speed:=0.35 period:=0.25
 ```
 
 You should see both nodes start up and log to the screen. But we are not! What error message are we getting? It seems like it cannot find the launch file. This is because we have not told the compiler where the launch file is. We can do that by modifying the `setup.py` file.
