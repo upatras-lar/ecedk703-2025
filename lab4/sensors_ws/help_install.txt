@@ -1,0 +1,5 @@
+rosdep install --from-paths src/v4l2_camera --ignore-src -r -y
+colcon build #(or with symlink just to be sure)
+
+# For lidar pkg
+colcon build --symlink-install
