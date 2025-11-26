@@ -86,11 +86,16 @@ class DoublePendulumNode(Node):
         self.elbow_motor.setImpedanceControllerParams(0.2, 0.02)
 
         # Create publisher for the joint states (position and velocity)
-        self.state_publisher = self.create_publisher(JointState, "/joint_states", 100)
-        self.timer = self.create_timer(0.01, self.timer_callback)
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
         # Create subscription for the equilibrium point
-        self.control_subscriber = self.create_subscription(Int32, "/equilibrium", self.subscriber_callback, 100)
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
     def timer_callback(self) -> None:
         """
@@ -109,7 +114,10 @@ class DoublePendulumNode(Node):
         state_msg.position = [float(self.shoulder_motor.getPosition()), float(self.elbow_motor.getPosition())]
 
         # Set the velocity positions
-        state_msg.velocity = [float(self.shoulder_motor.getVelocity()), float(self.elbow_motor.getVelocity())]
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
         # Publish the message
         self.state_publisher.publish(state_msg)
@@ -136,14 +144,20 @@ class DoublePendulumNode(Node):
             self.shoulder_motor.setTargetPosition(0.0)
             self.elbow_motor.setTargetPosition(0.0)
         elif equilibrium_point == 2:
-            self.shoulder_motor.setTargetPosition(0.0)
-            self.elbow_motor.setTargetPosition(math.pi)
+        ############ ENTER CODE HERE (delete pass) ################
+            pass
+
+        ###########################################################
         elif equilibrium_point == 3:
-            self.shoulder_motor.setTargetPosition(math.pi)
-            self.elbow_motor.setTargetPosition(math.pi)
+        ############ ENTER CODE HERE  (delete pass) ###############
+            pass
+
+        ##########################################################
         elif equilibrium_point == 4:
-            self.shoulder_motor.setTargetPosition(math.pi)
-            self.elbow_motor.setTargetPosition(0.0)
+        ############ ENTER CODE HERE (delete pass) ###############
+            pass
+
+        ##########################################################
         else:
             pass
 
@@ -218,12 +232,10 @@ def generate_launch_description():
             arguments=["-d", rviz_config_file],
             output="screen",
         ),
-        Node(
-            package="pendu_control_pkg",
-            executable="double_pendulum_node",
-            name="double_pendulum_node",
-            output="screen",
-        ),
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
     ])
 ```
 
@@ -423,20 +435,16 @@ class SliderControlNode(Node):
         self.mc.set_encoders([2048, 2048, 2048, 2048, 2048, 2048, 2048], joint_speed) 
 
         # Create publisher and timer for the joint states
-        self.visualize_publisher = self.create_publisher(
-            msg_type = JointState,
-            topic = "/joint_states",
-            qos_profile = 10
-        )
-        self.timer = self.create_timer(timer_period_sec = 0.01, callback = self.publish_states)
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
         # Create subscriber to read the joint states targets from the GUI sliders
-        self.control_subscriber = self.create_subscription(
-            msg_type = JointState,
-            topic = "/joint_states_targets",
-            callback = self.move_arm,
-            qos_profile = 10
-        )
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
     
     def publish_states(self) -> None:
         """
@@ -464,7 +472,10 @@ class SliderControlNode(Node):
         msg.position = positions
 
         # Publish the message
-        self.visualize_publisher.publish(msg)
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
     def move_arm(self, msg: JointState) -> None:
         """
@@ -473,16 +484,19 @@ class SliderControlNode(Node):
         """
 
         # Read the desired positions from the message
-        joint_angles = []
+        joint_angles_list = []
         for angle_rad in msg.position:
             angle_deg = round(math.degrees(angle_rad), 3)
-            joint_angles.append(angle_deg)
+            joint_angles_list.append(angle_deg)
 
         # Read the desired speed (parameter value)
         joint_speed = max(1, min(int(self.get_parameter('joint_speed').value), 100))
 
         # Move the arm to the desired position at the desired speed
-        self.mc.send_angles(angles = joint_angles, speed = joint_speed)
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
 
 def main(args = None):
     try:
@@ -517,7 +531,7 @@ if __name__ == '__main__':
 
 Let's create a launch file to start the myArm visualization with joint control:
 
-Create the file `myarm_300_pi/launch/myarm_launch.py`:
+The launch file can be found in `myarm_300_pi/launch/myarm_launch.py`:
 
 ```python
 from launch import LaunchDescription
@@ -559,11 +573,10 @@ def generate_launch_description():
             output="screen",
         ),
         
-        Node(
-            package="myarm_300_pi",
-            executable="simple_control_node",
-            output="screen",
-        ),
+        ############ ENTER CODE HERE ###############
+
+
+        ############################################
     ])
 ```
 
