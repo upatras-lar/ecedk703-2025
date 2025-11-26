@@ -38,7 +38,11 @@ class ArucoDetector(Node):
         with open("src/camera_pkg/camera_pkg/camera_params.json", "r") as f:
             data = json.load(f)
 
-        camera_params_num = 6
+        # Input your camera number
+        ####### ENTER CODE HERE #######
+
+
+        ###############################
         self.camera_matrix = np.array(data["camera_parameters"][str(camera_params_num)]["camera_matrix"]) # camera/intrinsic matrix
         self.dist_coeffs = np.array(data["camera_parameters"][str(camera_params_num)]["dist_coeffs"])  # distortion coefficients
 

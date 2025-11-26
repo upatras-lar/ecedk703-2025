@@ -121,7 +121,11 @@ class ArucoDetector(Node):
         with open("src/camera_pkg/camera_pkg/camera_params.json", "r") as f:
             data = json.load(f)
 
-        camera_params_num = 6
+        # Input your camera number
+        ####### ENTER CODE HERE #######
+
+
+        ###############################
         self.camera_matrix = np.array(data["camera_parameters"][str(camera_params_num)]["camera_matrix"]) # camera/intrinsic matrix
         self.dist_coeffs = np.array(data["camera_parameters"][str(camera_params_num)]["dist_coeffs"])  # distortion coefficients
 
@@ -290,14 +294,17 @@ if __name__ == "__main__":
 > - Declare `marker_length` as a configurable parameter with an initial value of 0.05m
 > - Save it as a class member variable `self.marker_length` to be easily accessible from all the class functions.
 
-> **Student TODO IV:** After we have detetcted and found the translation and rotation of an aruco marker relative to the camera frame, we want to apply an exponential moving average filter so that our data is smoother. As you can see we have already built `filter_pose` as a class member.
+> **Student TODO IV:** Each camera has different configuration parameters. Without these, the distances we calculate when using the camera will be wrong. Each camera is marked with a number on it.
+> - Create a `camera_params_num` variable and set it its value to your camera number. This will let the program find the correct set of configuration parameters for your camera.
+
+> **Student TODO V:** After we have detected and found the translation and rotation of an aruco marker relative to the camera frame, we want to apply an exponential moving average filter so that our data is smoother. As you can see we have already built `filter_pose` as a class member.
 > - Use `filter_pose` on our marker spatial data. Remember to use the filtered values of our data!
 
-> **Student TODO V:** In `__init__` we created a instance of `TransformBroadcaster(self)`. We can use it to send `TransformStamped` type messages to the `/tf` topic. This is the topic that Rviz listens to. This means that Rviz will know where the marker frame is in relation to the camera frame and display it.
+> **Student TODO VI:** In `__init__` we created a instance of `TransformBroadcaster(self)`. We can use it to send `TransformStamped` type messages to the `/tf` topic. This is the topic that Rviz listens to. This means that Rviz will know where the marker frame is in relation to the camera frame and display it.
 > - Inspect the format of the `TransformStamped` message type with `ros2 interface show geometry_msgs/msg/TransformStamped`
 > - Insert the translation and rotation (quaternion) information into our `TransformStamped` message. 
 
-> **Student TODO VI:** Lastly, we want to place visual marker (i.e. a small box) in our marker frame. This is just to visually represent the aruco marker.Remember, Rviz already knows where the aruco marker frame is because we published the `TransformBroadcaster` message to `/tf`.
+> **Student TODO VII:** Lastly, we want to place visual marker (i.e. a small box) in our marker frame. This is just to visually represent the aruco marker.Remember, Rviz already knows where the aruco marker frame is because we published the `TransformBroadcaster` message to `/tf`.
 > - Fill our the `pose.position.x`, `pose.position.y` and `pose.position.z` of our `Marker` message. Remember to use the filtered values of our data!
 > - Fill out the `scale.x` and `scale.y` fields of our `Marker` message. They should be equal to the real size of our aruco marker. Remember, we already defined this as a configurable parameter. 
 
@@ -305,11 +312,7 @@ if __name__ == "__main__":
 
 ### 1.3 Launching the camera stack
 
-We provide a launch file that wires everything together:
-
-```text
-camera_pkg/launch/camera_launch.py
-```
+We provide a launch file that wires everything together `camera_pkg/launch/camera_launch.py`.
 
 It will:
 
@@ -526,8 +529,8 @@ if __name__ == "__main__":
 > **Student TODO I:** Create a subscriber to listen to the lidar's data. The subscriber:
 > - Listens to the `/scan` topic, receives `LaserScan` type messages and uses `scan_callback` as its callback function.
 
-> **Student TODO II:** Create a publisher to publish `Marker` type messages. The publisher:
-> - Published to the `/radar_marker` topic and sends `Marker` type messages.
+> **Student TODO II:** Create a publisher named `marker_pub` to publish `Marker` type messages. The publisher:
+> - Publishes to the `/radar_marker` topic and sends `Marker` type messages.
 
 > **Student TODO III:** We want to declare some of our radar's properties as configurable parameters. Specifically:
 > - The range of our cone represented by a `min_radar_angle` and `max_radar_angle` (in degrees).
@@ -543,11 +546,7 @@ if __name__ == "__main__":
 
 ### 2.3 Launching the LiDAR stack
 
-The launch file for the LiDAR exercises is:
-
-```text
-lidar_pkg/launch/lidar_launch.py
-```
+The launch file for the LiDAR exercise is `lidar_pkg/launch/lidar_launch.py`.
 
 It:
 
