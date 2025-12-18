@@ -1,5 +1,7 @@
 # ROS2 Laboratory 6 – All‑In‑One
+
 In the previous labs we learned how to:
+
 - create ROS2 packages and nodes,
 - use **topics**, **parameters**, and **launch files**,
 - work with **TF** and **URDF** robot descriptions, and
@@ -16,6 +18,7 @@ But this time when an obstacle is detected (or when it moves), the **myArm 300 P
 ## What you are given
 
 Inside `lab6/myarm_follow_ws/src/` there are two packages:
+
 - `lidar_follow_pkg`
 - `rplidar_ros`
 
@@ -23,24 +26,29 @@ This lab uses (and launches) the following nodes:
 
 - **`rplidar_ros/rplidar_node`**  
   Publishes:
+
   - `/scan` (`sensor_msgs/msg/LaserScan`)
 
 - **`lidar_follow_pkg/radar_node`**  
   Subscribes:
+
   - `/scan`  
-  Publishes:
+    Publishes:
   - `/radar_marker` (`visualization_msgs/msg/Marker`)
   - `/obstacle_pose` (`geometry_msgs/msg/PoseStamped`) – obstacle pose in the **LiDAR frame**
 
 - **`lidar_follow_pkg/myarm_node`**  
   Subscribes:
-  - `/obstacle_pose`  
+
+  - `/obstacle_pose`
 
   Publishes:
+
   - `/joint_states` (`sensor_msgs/msg/JointState`) – used for RViz visualization
 
 - **`tf2_ros/static_transform_publisher`**  
   Publishes a fixed TF transform between:
+
   - `myarm_base_frame` → `lidar_frame`
 
 - **`robot_state_publisher`**  
@@ -70,6 +78,7 @@ radar_node  ───────────────► /radar_marker (Mark
 ```
 
 The “glue” that makes this work is **TF**:
+
 - `radar_node` publishes the obstacle pose in the LiDAR frame (`lidar_frame`)
 - `myarm_node` uses TF to transform that point into the arm base frame (`myarm_base_frame`)
 - then it computes IK and moves the arm
@@ -86,14 +95,14 @@ git clone -b ros2 --depth 1 https://github.com/Slamtec/rplidar_ros.git
 This clones the ros2 compatible branch for the `rplidar_ros` repository. Now that we have, it we are going to source and build it according to the maintainers instructions:
 
 ```bash
-cd myarm_follow_pkg
+cd myarm_follow_ws
 source /opt/ros/galactic/setup.bash
 colcon build --symlink-install --packages-select rplidar_ros
 ```
+
 Now that we have done that we don't have to worry about this package again for the rest of the exercise. We can directly launch it from our launch file when we need it.
 
 ## Making the myarm_node
-
 
 ```python
 import math
@@ -124,7 +133,7 @@ class MyArmNode(Node):
         self.declare_parameter("baudrate", 115200)
         baudrate = self.get_parameter("baudrate").value
 
-        # Declare parameter for the speed of myarm joints 
+        # Declare parameter for the speed of myarm joints
         self.declare_parameter("speed", 80)
         self.speed = self.get_parameter("speed").value
 
@@ -136,21 +145,21 @@ class MyArmNode(Node):
 
         # Create publisher and timer for the joint states
         ############# ENTER CODE HERE ###################
-        
+
 
         #################################################
 
         # Create subscription for the detected obstacle
         ############# ENTER CODE HERE ###################
-        
-        
+
+
         #################################################
 
         self.q0_list = None
         self.last_x = 0.0
         self.last_y = 0.0
         self.last_z = 0.0
-    
+
     def publish_myarm_state(self) -> None:
         """
         This function is periodically called by the timer. It publishes the current state (joint angles)
@@ -166,10 +175,10 @@ class MyArmNode(Node):
 
         # Read the current positions of the joints (in degrees)
         ############# ENTER CODE HERE ###################
-        
-        
+
+
         #################################################
-       
+
         # Convert the joint angles to radians
         positions = []
         for angle_deg in joint_angles_list:
@@ -181,8 +190,8 @@ class MyArmNode(Node):
 
         # Publish the message
         ############# ENTER CODE HERE ###################
-        
-        
+
+
         #################################################
 
     def follow_obstacle(self, msg: PoseStamped):
@@ -222,17 +231,17 @@ class MyArmNode(Node):
 
         # Transform obstacle's point from lidar frame into myarm base (world) frame
         ############# ENTER CODE HERE ###################
-        
-        
+
+
         #################################################
         posx_w, posy_w, posz_w = p_base
 
         # Build desired end-effector pose in myarm base (world) frame
         ############# ENTER CODE HERE ###################
-        
-        
+
+
         #################################################
- 
+
         # Solve inverse kinematics
         if abs(posx_w - self.last_x) > 0.015 or abs(posy_w - self.last_y) > 0.015 or abs(posz_w - self.last_z) > 0.015:
             self.get_logger().info(f"{Twbd}")
@@ -247,7 +256,7 @@ class MyArmNode(Node):
                 self.get_logger().info(f"SUCCESSFUL inverse kinematics! Found q = {np.round(q_deg, 2)} (degrees)")
             else:
                 self.get_logger().info("FAILED inverse kinematics!")
-            
+
             # Keep the last obstacle's position
             self.last_x = posx_w
             self.last_y = posy_w
@@ -272,16 +281,19 @@ def main(args = None):
 if __name__ == '__main__':
     main()
 ```
+
 > **Student TODO I:** Create the `visualize_publisher` as a class variable to publish `JointState` messages in the `/joint_states` topic every 0.01 seconds.
 
 > **Student TODO II:** Create the `obstacle_subscription` as a class variable to listen for `PoseStamped` messages in the `/obstacle_pose` topic and call the `follow_obstacle` method when it receives a message.
 
 > **Student TODO III:** In the `publish_my_arm_state` method we read the current state of the robot's joints and then use our publisher to publish it to `/joint_states`.
+>
 > - Inspect the fields of the `JointState` message with `ros2 interface show sensor_msgs/msg/JointState`
 > - Use the `get_angles()` method on the `myarm` object that we created in `__init__` and save in on a variable called `joint_angles_list`.
 > - Use the publisher to publish the message that we created.
 
 > **Student TODO IV:** The `follow_obstacle` method is called whenever a new obstacle is detected. The `msg` here is the message that the subscriber received, which is the pose of the detected obstacle in the lidar frame. We need to transform it to the robot base frame and then use inverse kinematics to hover over that position.
+>
 > - Use the rotation matrix `R_bl` and the translation `t_bl` of the lidar expressed in world frame to calculate the 3D position of the obstacle with respect to the world frame and save it in `p_base` variable.
 > - Create the trasnformation matrix `Twbd` using a rotation of 180 degress around the y axis and the obstacle translation in the world frame that you calculated previously.
 
@@ -326,7 +338,7 @@ def generate_launch_description():
     inverted = LaunchConfiguration('inverted', default = 'false')
     angle_compensate = LaunchConfiguration('angle_compensate', default = 'true')
     scan_mode = LaunchConfiguration('scan_mode', default = 'Sensitivity')
-    
+
     return LaunchDescription([
 
         DeclareLaunchArgument('channel_type', default_value = channel_type, description = 'Specifying channel type of lidar'),
@@ -407,7 +419,9 @@ def generate_launch_description():
         ),
     ])
 ```
+
 > **Student TODO:** Measure the distance in the x and y axis of the lidar with respect to the world frame. We need to insert this tranlation information into the launch file, so that our program nows the relative transformation between the robot and the lidar.
+>
 > - Modify the `t_bl` variable to matrch the translation that you measured above.
 > - If the axes of the lidar are rotated relative to the world frame, you need to insert that rotation around the z axis in the `zrot_bl`
 
