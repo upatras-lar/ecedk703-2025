@@ -69,9 +69,9 @@ def generate_launch_description():
             name = "radar_node",
             output = "screen",
             parameters = [{
-                "min_radar_angle": -45.0,
-                "max_radar_angle": 20.0,
-                "trigger_distance": 0.6,
+                "min_radar_angle": 0.0,
+                "max_radar_angle": 90.0,
+                "trigger_distance": 0.4,
             }],
         ),
 
