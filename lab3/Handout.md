@@ -452,17 +452,20 @@ class SliderControlNode(Node):
         of the arm's joints to the /joint_states topic.
         """
 
+        # Read the current positions of the joints (in degrees)
+        joint_angles_list = self.mc.get_angles()
+        if joint_angles_list is None:
+            self.get_logger().warn("Failed to read joint angles.")
+            return
+
         # Create the message with the time stamp
         msg = JointState()
         msg.header.stamp = self.get_clock().now().to_msg()
 
         # Set the joint names
         msg.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7"]
-
-        # Read the current positions of th joints (in degrees)
-        joint_angles_list = self.mc.get_angles()
        
-       # Convert the joint angles to radians
+        # Convert the joint angles to radians
         positions = []
         for angle_deg in joint_angles_list:
             angle_rad = round(math.radians(angle_deg), 3)
@@ -517,7 +520,7 @@ if __name__ == '__main__':
     main()
 ```
 
-> **Student TODO I**: We need to create a `publisher` that sends `JointState` type messages in the `/joint_states` topic. We also need to create a timer, who every 0.01 seconds calls the `publish_states` function.
+> **Student TODO I**: We need to create a `publisher` that sends `JointState` type messages in the `/joint_states` topic. We also need to create a timer, who every 0.05 seconds calls the `publish_states` function.
 
 > **Student TODO II**: We also need to create a `subscriber` that receives `JointState` type messages in the `/joint_states_targets` topic and then calls the `move_arm` function.
 

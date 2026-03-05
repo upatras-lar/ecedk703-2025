@@ -166,13 +166,6 @@ class MyArmNode(Node):
         of the arm's joints to the /joint_states topic.
         """
 
-        # Create message with time stamp
-        msg = JointState()
-        msg.header.stamp = self.get_clock().now().to_msg()
-
-        # Set joint names
-        msg.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7"]
-
         # Read the current positions of the joints (in degrees)
         ############# ENTER CODE HERE ###################
 
@@ -184,6 +177,13 @@ class MyArmNode(Node):
         for angle_deg in joint_angles_list:
             angle_rad = round(math.radians(angle_deg), 3)
             positions.append(angle_rad)
+
+        # Create message with time stamp
+        msg = JointState()
+        msg.header.stamp = self.get_clock().now().to_msg()
+
+        # Set joint names
+        msg.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7"]
 
         # Set joint positions
         msg.position = positions
@@ -282,7 +282,7 @@ if __name__ == '__main__':
     main()
 ```
 
-> **Student TODO I:** Create the `visualize_publisher` as a class variable to publish `JointState` messages in the `/joint_states` topic every 0.01 seconds.
+> **Student TODO I:** Create the `visualize_publisher` as a class variable to publish `JointState` messages in the `/joint_states` topic every 0.05 seconds.
 
 > **Student TODO II:** Create the `obstacle_subscription` as a class variable to listen for `PoseStamped` messages in the `/obstacle_pose` topic and call the `follow_obstacle` method when it receives a message.
 

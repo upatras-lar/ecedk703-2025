@@ -53,21 +53,24 @@ class SliderControlNode(Node):
         of the arm's joints to the /joint_states topic.
         """
 
+        # Read the current positions of the joints (in degrees)
+        joint_angles_list = self.mc.get_angles()
+        if joint_angles_list is None:
+            self.get_logger().warn("Failed to read joint angles.")
+            return
+
+        # Convert the joint angles to radians
+        positions = []
+        for angle_deg in joint_angles_list:
+            angle_rad = round(math.radians(angle_deg), 3)
+            positions.append(angle_rad)
+
         # Create the message with the time stamp
         msg = JointState()
         msg.header.stamp = self.get_clock().now().to_msg()
 
         # Set the joint names
         msg.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7"]
-
-        # Read the current positions of th joints (in degrees)
-        joint_angles_list = self.mc.get_angles()
-       
-       # Convert the joint angles to radians
-        positions = []
-        for angle_deg in joint_angles_list:
-            angle_rad = round(math.radians(angle_deg), 3)
-            positions.append(angle_rad)
 
         # Set joint positions
         msg.position = positions
